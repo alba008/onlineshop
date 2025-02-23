@@ -1,41 +1,303 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
+<html lang="en">
+<head>
+    <meta charset="utf-8">
     <title>{% block title %}Makutanoni{% endblock %}</title>
+    
+    <!-- External Stylesheets -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="{% static 'css/base.css' %}" rel="stylesheet">
-  </head>
-  <body>
-    <div id="header">
-      <a href="/" class="logo">Makutanoni</a>
-    </div>
-    <div id="subheader">
-        <div class="cart">
-            {% with total_items=cart|length %}
-              {% if total_items > 0 %}
-                   <!-- Cart Icon with Font Awesome -->
-        <i class="fas fa-shopping-cart"></i>
-        
-        <a href="{% url "cart:cart_detail" %}">
-          {{ total_items }} item{{ total_items|pluralize }},
-          ${{ cart.get_total_price }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        /* Ensures body content does not hide behind the navbar */
+        body {
+            padding-top: 56px;
+        }
+
+        .pills-container {
+            background-color: #fdfdfe;
+            padding: 10px 0;
+            position: relative;
+            top: 10px; /* Adjusts to align below the navbar */
+            z-index: 1000;
+            width: 100%;
+            font:white;
+            border-bottom: 1px solid rgba(26, 22, 22, 0.3)!important; /* Light white border */
+
+        }
+
+        /* Dropdown hover functionality */
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0; /* Removes unwanted margin */
+        }
+
+        /* Dropdown styling */
+        .dropdown-item{
+            min-width: 50%; /* Adjusts width for better layout */
+            padding: 10px;
+            border-radius:none;
+            font-size: 11px;
+            font-weight:bold!important;
+            margin-top: 10px!important;
+        }
+
+        .list-group-item {
+            border: none;
+            white-space: nowrap; /* Prevents wrapping */
+            font-size: 10px;
+            border-radius:0%;
+        }
+
+        /* Chatbot styling */
+        #webchat {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .list-group-item {
+    border: none !important; /* Remove all borders */
+    padding: 8px 15px; /* Adjust padding for spacing */
+    background: transparent; /* Ensure no background color */
+    margin-top: 10px!important;
+
+}
+/* Ensure dropdown displays horizontally */
+.nav-item.dropdown:hover .dropdown-menu {
+    display: flex !important;  /* Override Bootstrap default */
+    flex-direction: row; /* Arrange items in a row */
+    left: 0; /* Align properly */
+    top: 100%; /* Position it below the menu */
+    white-space: nowrap; /* Prevent wrapping */
+    min-width: 50%; /* Ensure it only takes needed space */
+    margin-top: 10px!important;
+
+}
+
+/* Add a slight background and shadow for better visibility */
+.dropdown-horizontal {
+    background: white;
+    border-radius: 0px !important;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 5px 10px;
+}
+
+/* Style individual dropdown items */
+.dropdown-horizontal .dropdown-item {
+    padding: 10px 15px;
+    display: block;
+    font-weight: bold; /* Makes text bold */
+    font-size: 10px;
+    margin-top: 10px!important;
+
+}
+
+/* Ensure dropdown menu items have proper spacing */
+.nav-pills .dropdown-menu {
+    border-radius: 0; /* Removes rounded corners */
+}
+
+/* Add a slight background and shadow for better visibility */
+.horizontal-dropdown {
+    background: white;
+    border-radius: 0px!important;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1px 1px;
+    font-weight: 700; /* 400 is normal, 700 is bold */
+    margin-top: 10px!important;
+
+
+}
+</style>
+</head>
+<body>
+
+<!-- Main Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+        <a href="/" class="navbar-brand">
+            <img src="{% static 'img/eagle.jpg' %}" alt="Logo" class="ms-2" style="height: 50px; width:50px; border-radius: 50%; border: 2px solid black">
         </a>
-      {% elif not order %}
-        <!-- Empty cart message with Icon -->
-        <i class="fas fa-shopping-cart"></i>
-        Your cart is empty.
-        {% endif %}
+
+        <!-- Toggle Button for Mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Search Bar (Centered) -->
+            <form class="d-flex mx-auto" method="GET" action="{% url 'shop:product_list' %}" style="width: 30%; height: 45px">
+                <input class="form-control me-2" type="search" name="q" placeholder="Search products..." aria-label="Search">
+            </form>
+
+            <!-- Cart Icon (Right-Aligned) -->
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="{% url 'cart:cart_detail' %}">
+                        <i class="fas fa-shopping-cart fa-lg"></i>
+                        <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {% if cart_items_count > 0 %}{{ cart_items_count }}{% else %}0{% endif %}
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Pills Navigation (Below Navbar) -->
+<div class="pills-container"style="margin-bottom:20px">
+    <ul class="nav nav-pills justify-content-center" style="border:none; font-size: 13px;">
+      <!-- Men Dropdown -->
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle text-black fw-bold" href="#" role="button" data-bs-toggle="dropdown">Men</a>
+  <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#"  style="border:none; font-size: 11px;">CLOTHING</a>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Shirts</li>
+          <li class="list-group-item">Sweaters</li>
+          <li class="list-group-item">Jeans</li>
+          <li class="list-group-item">Pants</li>
+          <li class="list-group-item">Hoodies</li>
+        </ul>
+      </li>
+      <li><a class="dropdown-item" href="#">SHOES</a>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Athletic</li>
+          <li class="list-group-item">Boots</li>
+          <li class="list-group-item">Fashion Sneaker</li>
+          <li class="list-group-item">Sandals</li>
+          <li class="list-group-item">Slippers</li>
+        </ul>
+      </li>
+      <li><a class="dropdown-item" href="#">FRAGRANCE</a>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">An item</li>
+          <li class="list-group-item">A second item</li>
+          <li class="list-group-item">A third item</li>
+          <li class="list-group-item">A fourth item</li>
+          <li class="list-group-item">And a fifth one</li>
+        </ul>
+      </li>
+      <li><a class="dropdown-item" href="#">WATCHES</a>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">An item</li>
+          <li class="list-group-item">A second item</li>
+          <li class="list-group-item">A third item</li>
+          <li class="list-group-item">A fourth item</li>
+          <li class="list-group-item">And a fifth one</li>
+        </ul>
+      </li>
+      <li><a class="dropdown-item" href="#">ACCESORIES</a>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">An item</li>
+          <li class="list-group-item">A second item</li>
+          <li class="list-group-item">A third item</li>
+          <li class="list-group-item">A fourth item</li>
+          <li class="list-group-item">And a fifth one</li>
+        </ul>
+      </li>
+     
+      <li>
+        <a class="dropdown-item" href="#"></a>
+        {% if products %}
+        {% with product=products|random %}
+        <!-- Select the random product only -->
+                <div class="card h-10" style="width: 8rem; border-radius: 0 !important; margin-right:15px; border:none!important;height:210px">
+                    <a href="{{ product.get_absolute_url }}">
+                        <img src="{{ product.image.url }}" class="card-img-top " alt="{{ product.name }}">
+                    </a>
+                    <div class="card-body">
+                        <h6 class="card-title" style="font-size: 10px;">Sales and Deals</h6>
+                        <p class="card-text"></p>
+                        <a href="#" class="btn btn-light" style="font-size: 10px;">Shop Now</a>
+                    </div>
+                </div>
             {% endwith %}
-          </div>
+        {% endif %}
+    </li>
+      <li>
+        <a class="dropdown-item" href="#"></a>
+        {% if products %}
+        {% with product=products|random %}
+        <!-- Select the random product only -->
+                <div class="card h-10" style="width: 8rem;margin-right:15px;height:100px">
+                    <a href="{{ product.get_absolute_url }}">
+                        <img src="{{ product.image.url }}" class="card-img-top rounded-top" alt="{{ product.name }}">
+                    </a>
+                    <div class="card-body">
+                        <h6 class="card-title" style="font-size: 10px;">New Arrival</h6>
+                        <p class="card-text"></p>
+                        <a href="#" class="btn btn-light" style="font-size: 10px;">Shop Now</a>
+                    </div>
+                </div>
+            {% endwith %}
+        {% endif %}
+    </li>
+    
+  </ul>
+</li>
 
-         
-    </div>
-    <div id="content">
-      {% block content %}
-      {% endblock %}
-    </div>
+      
+        <!-- Women Dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-black fw-bold" href="#" role="button">Women</a>
+            <ul class="dropdown-menu ">
+                <li><a class="dropdown-item" href="#">CLOTHING</a></li>
+                <li><a class="dropdown-item" href="#">SHOES</a></li>
+                <li><a class="dropdown-item" href="#">ACCESORIES</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Separated link</a></li>
+            </ul>
+        </li>
 
-  </body>
+        <!-- Kids Dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-black fw-bold" href="#" role="button">Kids</a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Separated link</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Content Block -->
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<!-- Footer & Chatbot -->
+{% block footer %}
+<div id="webchat"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/rasa-webchat@1.0.1/lib/index.js"></script>
+<script>
+    WebChat.default({
+        initPayload: "/get_started",
+        customData: { "language": "en" },
+        socketUrl: "http://localhost:5005",
+        socketPath: "/socket.io/",
+        title: "Alby's",
+        subtitle: "Ask about products!",
+        showFullScreenButton: false,
+        showMessageDate: true,
+        showCloseButton: true,
+        storage: "session"
+    });
+</script>
+{% endblock %}
+
+<!-- Bootstrap Script -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
 </html>

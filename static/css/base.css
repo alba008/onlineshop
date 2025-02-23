@@ -123,16 +123,19 @@ ul.errorlist {
 }
 
 #subheader {
-    background:#ececec;
-    color:#444;
+    background:#3401fe;
+    color:#ffffff;
     padding:15px 100px;
     overflow:auto;
+    border-left:none;
+    font-weight:bold;
+    
 }
 
 #header .logo {
     font-family: 'Ubuntu', sans-serif;
     float:left;
-    color:#333;
+    color:#ffffff;
     font-size:22px;
     margin-right:10%;
 }
@@ -140,6 +143,7 @@ ul.errorlist {
 #subheader .cart {
     float:right;
     padding-top:4px;
+    color:#ffffff;
 }
 
 #content {
@@ -177,12 +181,12 @@ ul.errorlist {
 }
 
 #sidebar ul li.selected {
-    background:#5993bb;
+    background:#bb7f59;
     border-radius:4px;
 }
 
 #sidebar ul li.selected a {
-    color:#fff;
+    color:#d5caca;
 }
 
 #main {

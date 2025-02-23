@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.urls import reverse
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -44,20 +46,24 @@ def validate_image_url(value):
 
 class Product(models.Model):
     category = models.ForeignKey(
-        Category,
+        'Category',
         related_name='products',
         on_delete=models.CASCADE
     )
     name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(max_length=200)
     image = models.ImageField(
-       models.URLField(max_length=500, blank=True, validators=[validate_image_url])
+        models.URLField(max_length=500, blank=True, validators=[validate_image_url])
     )
+    product_link = models.URLField(max_length=500, blank=True, null=True)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     available = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    # New field for customer ratings
+    rating = models.FloatField(default=0.0)  # Store rating as a float value (0 - 5)
 
     class Meta:
         ordering = ['name']
@@ -72,3 +78,21 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('shop:product_detail', args=[self.id, self.slug])
+
+    def get_star_rating(self):
+        """Returns a range for full stars"""
+        return range(int(self.rating))
+    
+    def get_empty_stars(self):
+        """Returns a range for empty stars"""
+        return range(5 - int(self.rating))
+
+class Banner(models.Model):
+    image = models.ImageField(upload_to='banners/')
+    title = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    link = models.URLField(max_length=200, blank=True, null=True)  # Add this field for the link
+
+
+    def __str__(self):
+        return self.title 

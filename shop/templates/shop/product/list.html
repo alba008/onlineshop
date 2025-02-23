@@ -1,42 +1,299 @@
 {% extends "shop/base.html" %}
 {% load static %}
+
 {% block title %}
   {% if category %}{{ category.name }}{% else %}Products{% endif %}
 {% endblock %}
+
 {% block content %}
-  <div id="sidebar">
-    <h3>Categories</h3>
-    <ul>
-      <li {% if not category %}class="selected"{% endif %}>
-        <a href="{% url "shop:product_list" %}">All</a>
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+  <div class="container mt-4">
+  <div class="row">
+<!-- Sidebar -->
+<div class="col-lg-3 mb-4">
+  <div class="slide-out sidenav-fixed">
+    <h4 class="text-primary fw-bold"></h4>
+    <ul class="list-group list-unstyled sidenav sidenav-fixed ">
+      <li class="list-group-item border-0{% if not category %}active{% endif %}">
+        <a href="{% url 'shop:product_list' %}" class="text-decoration-none d-flex align-items-center text-dark">
+          <i class="fa-solid fa-list me-2"></i> All
+        </a>
       </li>
       {% for c in categories %}
-        <li {% if category and category.slug == c.slug %}class="selected"{% endif %}>
-          <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
-          {% if c.subcategories.exists %}
-            <ul>
-              {% for subcategory in c.subcategories.all %}
-                <li {% if category and category.slug == subcategory.slug %}class="selected"{% endif %}>
-                  <a href="{{ subcategory.get_absolute_url }}">{{ subcategory.name }}</a>
-                </li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-        </li>
+      <li class="list-group-item {% if category and category.slug == c.slug %}active{% endif %}">
+        <a href="{{ c.get_absolute_url }}" class="text-decoration-none text-dark">
+          <i class="fa-solid fa-chevron-right me-2"></i> {{ c.name }}
+        </a>
+      </li>
       {% endfor %}
+      <div class="card mb-3" style="width: 18rem;margin-top:20px;border-radius:0%;font-size:10px;height:100px">
+        <div class="card-body">
+          <h7 class="card-title text fw-bold">Need weekly product ispiration?</h7>
+          <a href="#" class="btn btn-info text-white fw-bold">Trending Now!</a>
+          <p class="card-text">See viral products and trending searches</p>
+        </div>
+      </div>
+
     </ul>
   </div>
-  <div id="main" class="product-list">
-    <h1>{% if category %}{{ category.name }}{% else %}Products{% endif %}</h1>
+
+</div>
+
+
+    <!-- Products Section -->
+    <div class="col-lg-9">
+      
+      <!-- Bootstrap Carousel -->
+      <div id="carouselExample" class="carousel slide mb-4" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          {% for banner in banners %}
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <img src="{{ banner.link }}" class="d-block w-100 rounded" alt="{{ banner.title }}">
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+
+      {% if products %}
+  <div class="row">
     {% for product in products %}
-      <div class="item">
-        <a href="{{ product.get_absolute_url }}">
-          <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-        </a>
-        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
-        <br>
-        ${{ product.price }}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+      <div class="card shadow-sm border-0">
+          <a href="{{ product.get_absolute_url }}">
+            <img src="{{ product.image.url }}" class="card-img-top rounded-top" style="height: 130px;" alt="{{ product.name }}">
+          </a>
+          <div class="card-body text-center"style=" font-size: 10px;">
+            <h6 class="card-title text-primary"style=" font-size: 11px">{{ product.name }}</h5>
+            <p><strong class="text-success"style=" font-size: 10px;">Price:</strong> ${{ product.price }}</p>
+            <div class="rating">
+              {% for _ in product.get_star_rating %}
+                  <i class="fa fa-star text-warning"></i>
+              {% endfor %}
+              {% for _ in product.get_empty_stars %}
+                  <i class="fa fa-star text-secondary"></i>
+              {% endfor %}
+          </div>
+            <a href="{{ product.get_absolute_url }}" class="btn btn-outline-dark btn-sm w-100" style="font-size:10px;">
+              <i class="fa-brands fa-amazon"></i> Buy Now
+            </a>
+          </div>
+        </div>
       </div>
     {% endfor %}
   </div>
+{% else %}
+  <p class="text-muted text-center">No products found. Try a different search.</p>
+{% endif %}
+
+<div class="d-flex justify-content-between">
+  <!-- Left Product Card -->
+  <div class="card text-bg-info" style="width: 100%;padding:20px">
+    <a class="dropdown-item" href="#"></a>
+    {% if products %}
+    {% with product=products|random %}
+    <div class="card h-5" style="width: 200px; margin-right: 1px; height: 150px; border-radius: 0%;margin-left:20px">
+      <a href="{{ product.get_absolute_url }}">
+        <img src="{{ product.image.url }}" class="card-img-top" style="background-color: aquamarine; width: 200px; height: 150px; border-radius: 0%;" alt="{{ product.name }}">
+      </a>
+    </div>
+    {% endwith %}
+    {% endif %}
+    <div class=" text-white">
+      <h5 class="card-title"style="margin-top:10px">Come Shop with Us..</h5>
+      <p class="card-text"><small>Last updated 3 mins ago</small></p>
+    </div>
+  </div>
+
+  <!-- Right Product Card -->
+  <div class="card text-bg-secondary mb-3" style="width: 100%; margin-left: 20px;padding:20px; background-color: aquamarine;">
+    <a class="dropdown-item" href="#"></a>
+    {% if products %}
+    {% with product=products|random %}
+    <div class="card h-5" style="width: 200px; margin-right: 1px; height: 150px; border-radius: 0%;margin-left:20px">
+      <a href="{{ product.get_absolute_url }}">
+        <img src="{{ product.image.url }}" class="card-img-top" style="background-color: aquamarine; width: 200px; height: 150px; border-radius: 0%;" alt="{{ product.name }}">
+      </a>
+    </div>
+    {% endwith %}
+    {% endif %}
+    <div class=" text-white">
+      <h5 class="card-title"style="margin-top:10px">Great Deals Await!</h5>
+      <p class="card-text"><small>Updated just now</small></p>
+    </div>
+  </div>
+</div>
+
+
+
+      <!-- NEW SECTION: Products by Category (Limited to 4 Categories & 4 Products Each) -->
+      <h6 class="mt-5">Shop by Category</h6>
+      {% for category in categories|slice:":4" %}
+      <div class="category-section mt-4"style=" font-size: 10px;">
+        <h6 class="text-primary">{{ category.name }}</h6>
+        <div class="row">
+          {% for product in category.products.all|slice:":4" %}
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div class="card shadow-sm border-0">
+              <a href="{{ product.get_absolute_url }}">
+                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" class="card-img-top rounded-top object-fit-cover" style="height: 135px;width:100%" alt="{{ product.name }}">
+              </a>
+              <div class="card-body text-center">
+                <h6 class="card-title text-primary">{{ product.name }}</h6>
+                <p class="card-text">
+                  <strong class="text-success">Price:</strong> ${{ product.price }}<br>
+                </p>
+                <div class="rating">
+                  {% for _ in product.get_star_rating %}
+                      <i class="fa fa-star text-warning"></i>
+                  {% endfor %}
+                  {% for _ in product.get_empty_stars %}
+                      <i class="fa fa-star text-secondary"></i>
+                  {% endfor %}
+              </div>
+                <a href="{{ product.get_absolute_url }}" class="btn btn-outline-dark btn-sm w-100"style="font-size:10px;>
+                  <i class="fa-brands fa-amazon"></i> Buy Now
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+      
+      <!-- Pagination -->
+      {% if products.has_other_pages %}
+      <nav>
+        <ul class="pagination justify-content-center mt-4">
+          {% if products.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ products.previous_page_number }}">&laquo; Previous</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">&laquo; Previous</span>
+            </li>
+          {% endif %}
+
+          {% for num in products.paginator.page_range %}
+            {% if products.number == num %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% else %}
+              <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if products.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ products.next_page_number }}">Next &raquo;</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">Next &raquo;</span>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom Styling -->
+<style>
+  .carousel {
+    height: 200px;
+    width: 99%;
+    margin-top:20px;
+    border-radius: 0;
+ 
+    margin-bottom:20px;
+  }
+  .carousel img {
+    height: 200px;
+    object-fit: cover;
+    width: 90%;
+    border-radius: 0;
+  }
+  .card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2)!important;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    width:150px;
+    height:255px;
+   
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+  }
+
+
+      /* Sticky Sidebar */
+      .sidenav {
+            position: fixed;
+            top: 70px; /* Ensure it stays below the top navbar */
+            left: 20px;
+            z-index: 1000;
+            width: 20%;
+            height: 100vh;
+            background-image: linear-gradient(to bottom, #ffffff, #7673ce,  #edeeee);
+            color:black;
+            border-bottom: 2px solid rgba(234, 4, 4, 0.25) !important; /* Light white border */
+            padding-top: 20px;
+
+        }
+
+        .list-group{
+          margin-top: 0px!important;
+        }
+
+        .list-group-item {
+          margin-top: 1px!important;
+          }
+
+
+        .list-group-item:hover {
+            background-color: rgba(211, 211, 211, 0.3); /* Light greyish hover effect */
+            cursor: pointer; /* Change cursor to pointer for interactivity */
+        }
+
+
+  /* For small screens, hide the side navbar and make the menu a hamburger */
+  @media only screen and (max-width: 992px) {
+            .sidenav {
+                width: 16%;
+                position: fixed;
+                top:70px;
+                height: 100vh;
+                left:0
+            }
+          }
+
+
+
+
+  
+
+
+</style>
+
 {% endblock %}
+ <!-- JavaScript for Materialize Initialization -->
+ <script>
+  // Initialize Materialize Components
+  document.addEventListener('DOMContentLoaded', function () {
+      const sidenav = document.querySelectorAll('.sidenav');
+      M.Sidenav.init(sidenav);  // Initialize the sidenav for mobile (hamburger menu)
+  });
+
+</script>

@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 from decouple import config
 
 
@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'payment.apps.PaymentConfig',
     'shop.apps.ShopConfig',
     'accounts', 
+    'django_bootstrap5',
+
     
 ]
 
@@ -72,7 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'cart.context_processors.cart',
+                'cart.context_processors.cart_items_count',
             ],
         },
     },
@@ -141,7 +143,7 @@ STATIC_ROOT = BASE_DIR / 'static'
 
 # Define the directory where Django will collect static files
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Replace `BASE_DIR` with your project's base directory variable
+    os.path.join(BASE_DIR,  'static'),  # Replace `BASE_DIR` with your project's base directory variable
 ]
 
 # Define the directory for collected static files (used in production)
@@ -160,7 +162,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
 STRIPE_API_VERSION = '2024-04-10'
-STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET')
+STRIPE_WEBHOOK_SECRET = 'whsec_d63ebb2a3436ba1c4324812dde94dcdd8b9e9dc00ab12ec1a93d80cc765d787b'
 
 
 # Redis settings

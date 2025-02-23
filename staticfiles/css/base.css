@@ -151,6 +151,14 @@ ul.errorlist {
     width:220px;
     padding:30px 20px 0 0;
     float:left;
+        position: -webkit-sticky; /* For Safari */
+        position: sticky;
+        top: 20px; /* Adjust to set the distance from the top */
+        padding: 10px;
+        background-color: #ffffff; /* Optional: Add a background color */
+        height: 100%; /* Ensure the sidebar takes the full height of the container */
+        overflow-y: auto; /* If the sidebar content is long, make it scrollable */
+
 }
 
 #sidebar ul{
@@ -329,78 +337,3 @@ form div.field {
     border-radius:4px;
 }
 
-
-/* General page container style */
-.p-3.mt-4 {
-    padding: 20px;
-    margin-top: 40px;
-}
-
-/* Centered container */
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-/* Form card styling */
-.card {
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-/* Card body */
-.card-body {
-    padding: 30px;
-}
-
-/* Header */
-.card-body h2 {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-/* Horizontal rule styling */
-.card-body hr {
-    border-top: 1px solid #e0e0e0;
-    margin-bottom: 20px;
-}
-
-/* Form field */
-form input, form select, form textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-/* Button style */
-.btn.bg-dark {
-    background-color: #343a40;
-    color: white;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    width: 100%;
-    border: none;
-}
-
-.btn.bg-dark:hover {
-    background-color: #212529;
-    cursor: pointer;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .col-md-8 {
-        max-width: 100%;
-        padding: 0 15px;
-    }
-
-    .card-body h2 {
-        font-size: 1.5rem;
-    }
-}
